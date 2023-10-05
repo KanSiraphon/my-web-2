@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+
+<head lang="en">
+    <meta charset="utf-8">
+    <title>Homepage 2</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="test_4.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            ระบบพยากรณ์การสำเร็จการศึกษานักศึกษาคณะวิทยาศาสตร์และเทคโนโลยี<br>มหาวิทยาลัยราชภัฏพิบูลสงคราม
+        </h1>
+        <hr>
+        <div class="row">
+            <form id="form_insert" action="" method="post" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label for="year">ปีที่เข้าศึกษา :</label>
+                    <select name="year" id="year">
+                        <option value=""> โปรดเลือก </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">2T1 :</label>
+                    <input type="text" class="form-control" id="2T1" name="2T1" placeholder="เกรดเฉลี่ยปี 2 เทอม 1"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label for="name">2T2 :</label>
+                    <input type="text" class="form-control" id="2T2" name="2T2" placeholder="เกรดเฉลี่ยปี 2 เทอม 2"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label for="name">G7 :</label>
+                    <input type="text" class="form-control" id="G7" name="G7" placeholder="เกรดเฉลี่ยปี 1 ถึงปี 3 "
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label for="name">G8 :</label>
+                    <input type="text" class="form-control" id="G8" name="G8" placeholder="เกรดเฉลี่ยปี 1 ถึงปี 4 "
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Total :</label>
+                    <input type="text" class="form-control" id="Total" name="Total" placeholder="เกรดเฉลี่ยทั้งหมด "
+                        required />
+                </div>
+
+                <input class="btn btn-success" id="submit" type="submit" value="พยากรณ์เลย">
+                <a href="Homepage.html" class="btn btn-success" id="back">ย้อนกลับ</a>
+            </form>
+            <div id="err"></div>
+
+        </div>
+
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span id="modalText"></span><br><br><br>
+                <input class="btn btn-success" id="reset" type="reset" value="ย้อนกลับ">
+                <!--<input class="btn btn-success" id="reset1" type="reset" value="OK">-->
+                <a href="Homepage.html" class="btn btn-success" id="reset1">OK</a>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+<script>
+
+    function fadd(e) {
+        e.preventDefault();
+        $.ajax({
+            url: "test_4.php",
+            type: "POST",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+
+            success: function (data) {
+                //console.log(data);
+                //alert('บันทึกเรียบร้อย');
+                //alert(data);
+                openModal(data);
+
+            }
+        });
+    }
+
+    function openModal(result) {
+        var modal = document.getElementById('myModal');
+        modal.style.display = 'block';
+
+        // ตั้งข้อความที่ต้องการแสดงใน Modal ที่ span ที่มี id="modalText"
+        document.getElementById('modalText').innerHTML = result;
+        //
+        $("#reset").click(function () {
+            //$("#form_insert")[0].reset();
+            closeModal()
+        })
+
+        $("#reset1").click(function () {
+            $("#form_insert")[0].reset();
+            closeModal()
+        })
+    }
+
+    function fselect_group(e) {
+        var dat = $("#form_insert").serialize();
+        //	console.log(dat);
+        $.post(
+            "year.php",
+            dat,
+            success_group
+        );
+    }
+
+    function success_group(data) {
+        console.log("data = %$", data)
+        var year = JSON.parse(data);
+        for (i = 0; i < year.length; i++) {
+            $('#year').append('<option value = "' + year[i].year_id + '">' + year[i].year_1 + '</option>');
+        }
+    }
+
+    function closeModal() {
+        var modal1 = document.getElementById('myModal');
+        modal1.style.display = 'none';
+    }
+
+    $().ready(function () {
+        //$("#btn_logout").hide();
+        fselect_group();
+        //$("#form_insert").onclick(fadd);
+        $("#form_insert").on('submit', (fadd));
+        //  $("#group_id").change(fprogram);
+    }
+    );
+
+</script>
+
+</html>
